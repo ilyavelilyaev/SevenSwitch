@@ -200,7 +200,11 @@ import QuartzCore
     fileprivate var didChangeWhileTracking: Bool = false
     fileprivate var isAnimating: Bool = false
     fileprivate var userDidSpecifyOnThumbTintColor: Bool = false
-    fileprivate var switchValue: Bool = false
+    fileprivate var switchValue: Bool = false {
+        didSet {
+            print(switchValue)
+        }
+    }
     
     /*
     *   Initialization
@@ -263,9 +267,9 @@ import QuartzCore
         backgroundView.addSubview(offLabel)
         
         // thumb
-        self.thumbView = UIView(frame: CGRect(x: 1, y: 1, width: self.frame.size.height - 2, height: self.frame.size.height - 2))
+        self.thumbView = UIView(frame: CGRect(x: 3, y: 3, width: self.frame.size.height - 6, height: self.frame.size.height - 6))
         thumbView.backgroundColor = self.thumbTintColor
-        thumbView.layer.cornerRadius = (self.frame.size.height * 0.5) - 1
+        thumbView.layer.cornerRadius = (self.frame.size.height * 0.5) - 3
         thumbView.layer.shadowColor = self.shadowColor.cgColor
         thumbView.layer.shadowRadius = 2.0
         thumbView.layer.shadowOpacity = 0.5
@@ -290,17 +294,18 @@ import QuartzCore
         startTrackingValue = self.on
         didChangeWhileTracking = false
         
-        let activeKnobWidth = self.bounds.size.height - 2 + 5
+        let activeKnobWidth = self.bounds.size.height - 6 + 5
         isAnimating = true
         
         UIView.animate(withDuration: 0.3, delay: 0.0, options: [UIViewAnimationOptions.curveEaseOut, UIViewAnimationOptions.beginFromCurrentState], animations: {
                 if self.on {
-                    self.thumbView.frame = CGRect(x: self.bounds.size.width - (activeKnobWidth + 1), y: self.thumbView.frame.origin.y, width: activeKnobWidth, height: self.thumbView.frame.size.height)
+                    self.thumbView.frame = CGRect(x: self.thumbView.frame.origin.x, y: self.thumbView.frame.origin.y, width: activeKnobWidth, height: self.thumbView.frame.size.height)
+
                     self.backgroundView.backgroundColor = self.onTintColor
                     self.thumbView.backgroundColor = self.onThumbTintColor
                 }
                 else {
-                    self.thumbView.frame = CGRect(x: self.thumbView.frame.origin.x, y: self.thumbView.frame.origin.y, width: activeKnobWidth, height: self.thumbView.frame.size.height)
+                    self.thumbView.frame = CGRect(x: self.bounds.size.width - (activeKnobWidth + 3), y: self.thumbView.frame.origin.y, width: activeKnobWidth, height: self.thumbView.frame.size.height)
                     self.backgroundView.backgroundColor = self.activeColor
                     self.thumbView.backgroundColor = self.thumbTintColor
                 }
@@ -326,7 +331,7 @@ import QuartzCore
         
         // update the switch to the correct visuals depending on if
         // they moved their touch to the right or left side of the switch
-        if lastPoint.x > self.bounds.size.width * 0.5 {
+        if lastPoint.x < self.bounds.size.width * 0.5 {
             self.showOn(true)
             if !startTrackingValue {
                 didChangeWhileTracking = true
@@ -388,17 +393,17 @@ import QuartzCore
             self.offLabel.frame = CGRect(x: frame.size.height, y: 0, width: frame.size.width - frame.size.height, height: frame.size.height)
             
             // thumb
-            let normalKnobWidth = frame.size.height - 2
-            if self.on {
-                thumbView.frame = CGRect(x: frame.size.width - (normalKnobWidth + 1), y: 1, width: frame.size.height - 2, height: normalKnobWidth)
+            let normalKnobWidth = frame.size.height - 6
+            if !self.on {
+                thumbView.frame = CGRect(x: frame.size.width - (normalKnobWidth + 3), y: 3, width: frame.size.height - 6, height: normalKnobWidth)
                 thumbImageView.frame = CGRect(x: frame.size.width - normalKnobWidth, y: 0, width: normalKnobWidth, height: normalKnobWidth)
             }
             else {
-                thumbView.frame = CGRect(x: 1, y: 1, width: normalKnobWidth, height: normalKnobWidth)
+                thumbView.frame = CGRect(x: 3, y: 3, width: normalKnobWidth, height: normalKnobWidth)
                 thumbImageView.frame = CGRect(x: 0, y: 0, width: normalKnobWidth, height: normalKnobWidth)
             }
             
-            thumbView.layer.cornerRadius = self.isRounded ? (frame.size.height * 0.5) - 1 : 2
+            thumbView.layer.cornerRadius = self.isRounded ? (frame.size.height * 0.5) - 3 : 2
             thumbView.layer.shadowPath = UIBezierPath(roundedRect: thumbView.bounds, cornerRadius: thumbView.layer.cornerRadius).cgPath
         }
     }
@@ -431,16 +436,16 @@ import QuartzCore
     *   optionally make it animated
     */
     fileprivate func showOn(_ animated: Bool) {
-        let normalKnobWidth = self.bounds.size.height - 2
+        let normalKnobWidth = self.bounds.size.height - 6
         let activeKnobWidth = normalKnobWidth + 5
         if animated {
             isAnimating = true
             UIView.animate(withDuration: 0.3, delay: 0.0, options: [UIViewAnimationOptions.curveEaseOut, UIViewAnimationOptions.beginFromCurrentState], animations: {
                 if self.isTracking {
-                    self.thumbView.frame = CGRect(x: self.bounds.size.width - (activeKnobWidth + 1), y: self.thumbView.frame.origin.y, width: activeKnobWidth, height: self.thumbView.frame.size.height)
+                    self.thumbView.frame = CGRect(x: 3, y: self.thumbView.frame.origin.y, width: activeKnobWidth, height: self.thumbView.frame.size.height)
                 }
                 else {
-                    self.thumbView.frame = CGRect(x: self.bounds.size.width - (normalKnobWidth + 1), y: self.thumbView.frame.origin.y, width: normalKnobWidth, height: self.thumbView.frame.size.height)
+                    self.thumbView.frame = CGRect(x: 3, y: self.thumbView.frame.origin.y, width: normalKnobWidth, height: self.thumbView.frame.size.height)
                 }
                 
                 self.backgroundView.backgroundColor = self.onTintColor
@@ -463,10 +468,10 @@ import QuartzCore
         }
         else {
             if self.isTracking {
-                thumbView.frame = CGRect(x: self.bounds.size.width - (activeKnobWidth + 1), y: thumbView.frame.origin.y, width: activeKnobWidth, height: thumbView.frame.size.height)
+                thumbView.frame = CGRect(x: 3, y: thumbView.frame.origin.y, width: activeKnobWidth, height: thumbView.frame.size.height)
             }
             else {
-                thumbView.frame = CGRect(x: self.bounds.size.width - (normalKnobWidth + 1), y: thumbView.frame.origin.y, width: normalKnobWidth, height: thumbView.frame.size.height)
+                thumbView.frame = CGRect(x: 3, y: thumbView.frame.origin.y, width: normalKnobWidth, height: thumbView.frame.size.height)
             }
             
             backgroundView.backgroundColor = self.onTintColor
@@ -486,18 +491,18 @@ import QuartzCore
     *   optionally make it animated
     */
     fileprivate func showOff(_ animated: Bool) {
-        let normalKnobWidth = self.bounds.size.height - 2
+        let normalKnobWidth = self.bounds.size.height - 6
         let activeKnobWidth = normalKnobWidth + 5
         
         if animated {
             isAnimating = true
             UIView.animate(withDuration: 0.3, delay: 0.0, options: [UIViewAnimationOptions.curveEaseOut, UIViewAnimationOptions.beginFromCurrentState], animations: {
                 if self.isTracking {
-                    self.thumbView.frame = CGRect(x: 1, y: self.thumbView.frame.origin.y, width: activeKnobWidth, height: self.thumbView.frame.size.height);
+                    self.thumbView.frame = CGRect(x: self.bounds.size.width - (activeKnobWidth + 3), y: self.thumbView.frame.origin.y, width: activeKnobWidth, height: self.thumbView.frame.size.height)
                     self.backgroundView.backgroundColor = self.activeColor
                 }
                 else {
-                    self.thumbView.frame = CGRect(x: 1, y: self.thumbView.frame.origin.y, width: normalKnobWidth, height: self.thumbView.frame.size.height);
+                    self.thumbView.frame = CGRect(x: self.bounds.size.width - (normalKnobWidth + 3), y: self.thumbView.frame.origin.y, width: normalKnobWidth, height: self.thumbView.frame.size.height)
                     self.backgroundView.backgroundColor = self.inactiveColor
                 }
                 
@@ -521,11 +526,11 @@ import QuartzCore
         }
         else {
             if (self.isTracking) {
-                thumbView.frame = CGRect(x: 1, y: thumbView.frame.origin.y, width: activeKnobWidth, height: thumbView.frame.size.height)
+                thumbView.frame = CGRect(x: self.bounds.size.width - (activeKnobWidth + 3), y: thumbView.frame.origin.y, width: activeKnobWidth, height: thumbView.frame.size.height)
                 backgroundView.backgroundColor = self.activeColor
             }
             else {
-                thumbView.frame = CGRect(x: 1, y: thumbView.frame.origin.y, width: normalKnobWidth, height: thumbView.frame.size.height)
+                thumbView.frame = CGRect(x: self.bounds.size.width - (normalKnobWidth + 3), y: thumbView.frame.origin.y, width: normalKnobWidth, height: thumbView.frame.size.height)
                 backgroundView.backgroundColor = self.inactiveColor
             }
             backgroundView.layer.borderColor = self.borderColor.cgColor
