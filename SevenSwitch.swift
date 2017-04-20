@@ -200,11 +200,7 @@ import QuartzCore
     fileprivate var didChangeWhileTracking: Bool = false
     fileprivate var isAnimating: Bool = false
     fileprivate var userDidSpecifyOnThumbTintColor: Bool = false
-    fileprivate var switchValue: Bool = false {
-        didSet {
-            print(switchValue)
-        }
-    }
+    fileprivate var switchValue: Bool = false
     
     /*
     *   Initialization
